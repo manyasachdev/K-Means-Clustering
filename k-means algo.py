@@ -11,6 +11,9 @@ class Point:
 p1=Point(20,5)
 pc=Point(6,-1)
 
+p2 =Point(4,2)
+p3 =Point(7,8)
+
 #Calculating Euclidean Distance
 def E_Distance(P1, Pc):
     sum = math.sqrt(math.pow((P1.x-Pc.x),2) + math.pow((P1.y-Pc.y),2))
@@ -25,8 +28,22 @@ def changeCentroid(p1, p2):
 
 newCentroid = changeCentroid(p1, pc)
 
+#Compare EuclideanDistance
+def compareEuclideanDistance(d1, d2):
+    if (d1  <= d2):
+        return d1
+    else:
+        return d2
+
+D1= E_Distance(p1,pc)
+D2= E_Distance(p2,p3)
+p4 = compareEuclideanDistance(D1, D2)
+    
+
 print(E_Distance(p1, pc))
 print(newCentroid)
+print(p4)
+
 
 
 
