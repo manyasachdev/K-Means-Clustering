@@ -5,8 +5,6 @@ import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import style
 
-
-
 class Point:
     def __init__(self, x=0, y=0):
         self.x = x
@@ -17,20 +15,12 @@ class Point:
 
 x,y = np.loadtxt('testcase.csv', unpack=True, delimiter=',')
 
+#Adding data to point type array
 P_arr=[]
 for i in range(10):
     P_arr.append(Point(x[i], y[i]))
-
-for obj in P_arr: 
-    print( obj.x, obj.y, sep =',' )
-
-plt.plot(x, y)
-plt.title('Sample Chart')
-plt.ylabel('Y-Axis')
-plt.xlabel('X-Axis')
-
+    plt.scatter(P_arr[i].x, P_arr[i].y, color = 'hotpink')
 plt.show()
-
 
 #Example points
 p1=Point(20,5)
