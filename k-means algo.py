@@ -15,19 +15,20 @@ class Point:
 
 #Cluster Class
 class Cluster:
-    def __init__(self, centroid = Point(0,0), data = [], color = 'white'):
+    def __init__(self, centroid = Point(0,0), points = [], color = 'white'):
         self.centroid = centroid
-        self.data = data
+        self.points = points
         self.color = color
     
     def __str__(self):
         pointList = ''
-        for i in range(len(self.data)):
-            pointList = pointList + f'({self.data[i].x}, {self.data[i].y})  '
+        for i in range(len(self.points)):
+            pointList = pointList + f'({self.points[i].x}, {self.points[i].y})  '
         return pointList
-
-
-        return (f'{self.data}')
+    
+    # Add point to the cluster
+    def addPoint(self, newPoint):
+        self.points = self.points + [newPoint]
 
     #Change the centroid of the cluster
     def changeCentroid(self, newPoint):
@@ -35,8 +36,8 @@ class Cluster:
         self.centroid.y = (newPoint.y + self.centroid.y)/2
 
     def plotCluster(self):
-        for i in range(len(self.data)):
-            plt.scatter(self.data[i].x, self.data[i].y, color = self.color)
+        for i in range(len(self.points)):
+            plt.scatter(self.points[i].x, self.points[i].y, color = self.color)
 
 
 #Selects and returns random k points in a list from a given dataset
@@ -67,7 +68,7 @@ x,y = np.loadtxt('testcase.csv', unpack=True, delimiter=',')
 DataSet=[]
 for i in range(10):
     DataSet.append(Point(x[i], y[i]))
-    plt.scatter(DataSet[i].x, DataSet[i].y, color = 'hotpink')
+#     plt.scatter(DataSet[i].x, DataSet[i].y, color = 'hotpink')
 # plt.show()
 
 #K-Means Clustering Algorithm
@@ -77,40 +78,48 @@ K = 2
 
 # cluster = List of Cluster objects
 clusters = []
-colors = ['black', 'hotpink', 'red']
+colors = ['black', 'red']
 
 #Select random centroids and create a list of K clusters
 randomPoints = selectRandomPoints(2, DataSet)
 for i in range(K):
-    clusters.append(Cluster(centroid = randomPoints[i], color = colors[i]))
-
-# print(f'{clusters[0].centroid}, {clusters[1].centroid}')
+    clusterInstance = Cluster(centroid = randomPoints[i], color = colors[i])
+    clusters.append(clusterInstance)
 
 #Iterate throught the dataset
 for i in range(len(DataSet)):
-
-    # p = current point
+    ######################################
+    # p = current Point
     p = DataSet[i]
 
     # edList = list of Eculidean Distances calculated bw the point and different centroids
     EuclideanDistances = []
     #Calculate Euclidean distance of p, c1 and c2
     for k in range(K):
+        ######################################
         ed = calculateEuclideanDistance(p, clusters[k].centroid)
         EuclideanDistances.append(ed)
+        ######################################
     
     # Compare the Euclidean Distances and choose the shortest one
     clusterPosition = compareEuclideanDistance(EuclideanDistances)
 
     # Add p to the cluster with the shortest ED
-    clusters[clusterPosition].data.append(p)
+    clusters[clusterPosition].addPoint(p)
+    print(f'Appended Cluster {clusterPosition} with point {p}. Length = {len(clusters[clusterPosition].points)}. Current centroid = ({clusters[clusterPosition].centroid.x}, {clusters[clusterPosition].centroid.y})')
 
     # Update the centroid of the appended cluster
     clusters[clusterPosition].changeCentroid(p)
+    print(f'Updated centroid = ({clusters[clusterPosition].centroid.x}, {clusters[clusterPosition].centroid.y})')
 
-# Priting the clusters
-for i in range (K):
-    print(f'Cluster {i}:')
-    print(clusters[i])
+#     ######################################
 
-# plt.show
+for point in DataSet:
+    print(point)
+
+# Priting and displaying the clusters
+for cluster in clusters:
+    for point in cluster.points:
+        plt.scatter(point.x, point.y, color = cluster.color)
+
+plt.show()
