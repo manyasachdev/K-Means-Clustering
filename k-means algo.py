@@ -2,9 +2,6 @@ import math
 import pandas as pd
 import numpy as np
 
-x,y = np.loadtxt('testcase.csv', unpack=True, delimiter=',')
-print(x)
-print(y)
 
 class Point:
     def __init__(self, x=0, y=0):
@@ -12,6 +9,16 @@ class Point:
         self.y = y
     def __str__(self):
         return (f'({self.x}, {self.y})')
+
+
+x,y = np.loadtxt('testcase.csv', unpack=True, delimiter=',')
+
+P_arr=[]
+P_arr.append(Point(x, y))
+
+for obj in P_arr: 
+    print( obj.x, obj.y, sep =' ' ) 
+
 
 #Example points
 p1=Point(20,5)
