@@ -1,6 +1,10 @@
 import math
+import random
 import pandas as pd
 import numpy as np
+from matplotlib import pyplot as plt
+from matplotlib import style
+
 
 
 class Point:
@@ -14,10 +18,18 @@ class Point:
 x,y = np.loadtxt('testcase.csv', unpack=True, delimiter=',')
 
 P_arr=[]
-P_arr.append(Point(x, y))
+for i in range(10):
+    P_arr.append(Point(x[i], y[i]))
 
 for obj in P_arr: 
-    print( obj.x, obj.y, sep =' ' ) 
+    print( obj.x, obj.y, sep =',' )
+
+plt.plot(x, y)
+plt.title('Sample Chart')
+plt.ylabel('Y-Axis')
+plt.xlabel('X-Axis')
+
+plt.show()
 
 
 #Example points
@@ -26,6 +38,13 @@ pc=Point(6,-1)
 
 p2 =Point(4,2)
 p3 =Point(7,8)
+
+#Select random k points from a given dataset
+def selectRandomPoints(K, dataSet):
+    randomPoints = []
+    for i in range(K):
+        randomPoints.append(random.choice(dataSet))
+
 
 #Calculating Euclidean Distance
 def E_Distance(P1, Pc):
