@@ -1,4 +1,10 @@
 import math
+import pandas as pd
+import numpy as np
+
+x,y = np.loadtxt('testcase.csv', unpack=True, delimiter=',')
+print(x)
+print(y)
 
 class Point:
     def __init__(self, x=0, y=0):
@@ -40,9 +46,9 @@ D2= E_Distance(p2,p3)
 p4 = compareEuclideanDistance(D1, D2)
     
 
-print(E_Distance(p1, pc))
-print(newCentroid)
-print(p4)
+#print(E_Distance(p1, pc))
+#print(newCentroid)
+#print(p4)
 
 
 
