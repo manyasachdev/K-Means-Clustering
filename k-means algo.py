@@ -5,6 +5,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import style
 
+#Point Class
 class Point:
     def __init__(self, x=0, y=0):
         self.x = x
@@ -12,62 +13,104 @@ class Point:
     def __str__(self):
         return (f'({self.x}, {self.y})')
 
+#Cluster Class
+class Cluster:
+    def __init__(self, centroid = Point(0,0), data = [], color = 'white'):
+        self.centroid = centroid
+        self.data = data
+        self.color = color
+    
+    def __str__(self):
+        pointList = ''
+        for i in range(len(self.data)):
+            pointList = pointList + f'({self.data[i].x}, {self.data[i].y})  '
+        return pointList
 
-x,y = np.loadtxt('testcase.csv', unpack=True, delimiter=',')
 
-#Adding data to point type array
-P_arr=[]
-for i in range(10):
-    P_arr.append(Point(x[i], y[i]))
-    plt.scatter(P_arr[i].x, P_arr[i].y, color = 'hotpink')
-plt.show()
+        return (f'{self.data}')
 
-#Example points
-p1=Point(20,5)
-pc=Point(6,-1)
+    #Change the centroid of the cluster
+    def changeCentroid(self, newPoint):
+        self.centroid.x = (newPoint.x + self.centroid.x)/2
+        self.centroid.y = (newPoint.y + self.centroid.y)/2
 
-p2 =Point(4,2)
-p3 =Point(7,8)
+    def plotCluster(self):
+        for i in range(len(self.data)):
+            plt.scatter(self.data[i].x, self.data[i].y, color = self.color)
 
-#Select random k points from a given dataset
+
+#Selects and returns random k points in a list from a given dataset
 def selectRandomPoints(K, dataSet):
     randomPoints = []
     for i in range(K):
         randomPoints.append(random.choice(dataSet))
+    return randomPoints
 
 
 #Calculating Euclidean Distance
-def E_Distance(P1, Pc):
-    sum = math.sqrt(math.pow((P1.x-Pc.x),2) + math.pow((P1.y-Pc.y),2))
+def calculateEuclideanDistance(dataPoint, centroid):
+    sum = math.sqrt(math.pow((dataPoint.x-centroid.x),2) + math.pow((dataPoint.y-centroid.y),2))
     return sum
 
-#Change the centroid
-def changeCentroid(p1, p2):
-    centroid = Point()
-    centroid.x = (p1.x + p2.x)/2
-    centroid.y = (p1.y + p2.y)/2
-    return centroid
+#Compares EuclideanDistances and returns the position of the chosen cluster 
+def compareEuclideanDistance(distances):
+    position = 0
+    for i in range(len(distances)):
+        if distances[i] == min(distances):
+            return i
 
-newCentroid = changeCentroid(p1, pc)
 
-#Compare EuclideanDistance
-def compareEuclideanDistance(d1, d2):
-    if (d1  <= d2):
-        return d1
-    else:
-        return d2
+#Parsing the CSV file using Numpy
+x,y = np.loadtxt('testcase.csv', unpack=True, delimiter=',')
 
-D1= E_Distance(p1,pc)
-D2= E_Distance(p2,p3)
-p4 = compareEuclideanDistance(D1, D2)
+#Adding data to a list of Points
+DataSet=[]
+for i in range(10):
+    DataSet.append(Point(x[i], y[i]))
+    plt.scatter(DataSet[i].x, DataSet[i].y, color = 'hotpink')
+# plt.show()
+
+#K-Means Clustering Algorithm
+
+#Initialize K
+K = 2
+
+# cluster = List of Cluster objects
+clusters = []
+colors = ['black', 'hotpink', 'red']
+
+#Select random centroids and create a list of K clusters
+randomPoints = selectRandomPoints(2, DataSet)
+for i in range(K):
+    clusters.append(Cluster(centroid = randomPoints[i], color = colors[i]))
+
+# print(f'{clusters[0].centroid}, {clusters[1].centroid}')
+
+#Iterate throught the dataset
+for i in range(len(DataSet)):
+
+    # p = current point
+    p = DataSet[i]
+
+    # edList = list of Eculidean Distances calculated bw the point and different centroids
+    EuclideanDistances = []
+    #Calculate Euclidean distance of p, c1 and c2
+    for k in range(K):
+        ed = calculateEuclideanDistance(p, clusters[k].centroid)
+        EuclideanDistances.append(ed)
     
+    # Compare the Euclidean Distances and choose the shortest one
+    clusterPosition = compareEuclideanDistance(EuclideanDistances)
 
-#print(E_Distance(p1, pc))
-#print(newCentroid)
-#print(p4)
+    # Add p to the cluster with the shortest ED
+    clusters[clusterPosition].data.append(p)
 
+    # Update the centroid of the appended cluster
+    clusters[clusterPosition].changeCentroid(p)
 
+# Priting the clusters
+for i in range (K):
+    print(f'Cluster {i}:')
+    print(clusters[i])
 
-
-
-
+# plt.show
