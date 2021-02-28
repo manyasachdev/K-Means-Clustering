@@ -14,7 +14,8 @@ class Point:
 x,y = np.loadtxt('testcase.csv', unpack=True, delimiter=',')
 
 P_arr=[]
-P_arr.append(Point(x, y))
+for i in range(10):
+    P_arr.append(Point(x[i], y[i]))
 
 for obj in P_arr: 
     print( obj.x, obj.y, sep =' ' ) 
