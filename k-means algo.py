@@ -84,24 +84,7 @@ def compareEuclideanDistance(distances):
         if distances[i] == min(distances):
             return i
 
-# PLOTTING CLUSTERS------------
-def Plot_clusters(clusters,DataSet):
 
-
-    # Printing the clusters
-    print("DataSet:")
-    for point in DataSet:
-        print(point)
-
-    for cluster in clusters:
-        print("Cluster------")
-        print(cluster)
-
-    # Displaying the clusters
-    for cluster in clusters:
-        print(f"Centroid = ({cluster.centroid.x}, {cluster.centroid.y})")
-        cluster.plotCentroid()
-        cluster.plotCluster()
 # ------------------------------------------------------------------------------------------------------------------------------------
 
 def main():
@@ -113,8 +96,12 @@ def main():
 
     # Adding data to a list of Points
     DataSet = []
-    for i in range(10):
+    for i in range(len(x)):
         DataSet.append(Point(x[i], y[i]))
+
+    for point in DataSet:
+        print(point) 
+
     #     plt.scatter(DataSet[i].x, DataSet[i].y, color = 'hotpink')
     # plt.show()
     # ------------------------------------------------------------------------------------------------------------------------------------
@@ -126,27 +113,25 @@ def main():
     SSEvals = []
     klist =[]
 
-    for m in range(1,6):
+    for m in range(1,11):
         K=m
 
         # clusters = List of Cluster objects
         clusters = []
-        colors = []
-        # To choose random color
-        for i in range(K):
-            r = random.random()
-            g = random.random()
-            b = random.random()
-            col = (r, g, b)
-            colors.append(col)
+        colors = ["black", "red", "pink", "yellow", "blue", "magenta", "orange", "brown", "green", "purple"]
 
         # Select random centroids and create a list of K clusters
         randomPoints = selectRandomPoints(K, DataSet)
+        
+        #print(f"Appointed centroid: {randomPoints}")
 
         # Creating and initializing the clusters using random centroids
         for i in range(K):
-            clusterInstance = Cluster(centroid=randomPoints[i], color = colors[i])
+            clusterInstance = Cluster(centroid=randomPoints[i], color=colors[i])
             clusters.append(clusterInstance)
+        
+        for cluster in clusters:
+            print(f"HEREEEEEEEEEEEEEE({cluster.centroid.x}, {cluster.centroid.y})")
 
 
         # Iterate throught the dataset
@@ -188,22 +173,38 @@ def main():
         for j in range(len(cluster.points)):
             temp = calculateEuclideanDistance(cluster.points[j], cluster.centroid)
             temp = math.pow(temp, 2)
-            cluster.sse = cluster.sse + temp
+            cluster.sse = temp
         temp2 = temp2 + cluster.sse
         SSEvals.append(temp2)
         klist.append(i+1)
         print(f"SSE{i}={SSEvals[i]}")
+        print(f"Klist{i}={klist[i]}")
         i=i+1
     
     plt.plot(klist, SSEvals)
     plt.show()
     # ---------------------------------------------------------------------------------------------------------------------------------
-    Plot_clusters(clusters,DataSet)
+"""
+    # PLOTTING CLUSTERS----------------------------------------------------------------------------------------------------------------
+    # Printing the clusters
+    print("DataSet:")
+    for point in DataSet:
+        print(point)
+
+    for cluster in clusters:
+        print("Cluster------")
+        print(cluster)
+
+    # Displaying the clusters
+    for cluster in clusters:
+        print(f"Centroid = ({cluster.centroid.x}, {cluster.centroid.y})")
+        cluster.plotCentroid()
+        cluster.plotCluster()
 
     plt.show()
     plt.close()
-
-
+    # ----------------------------------------------------------------------------------------------------------------------------------
+"""
 #Calling main
 main()
 
