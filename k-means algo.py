@@ -21,9 +21,11 @@ class Point:
 
 # Cluster Class
 class Cluster:
-    def __init__(self, centroid=Point(0, 0), color="white"):
+    def __init__(self, centroid=Point(0, 0), sse =0, color="white"):
         self.centroid = centroid
         self.points = []
+        self.sse = sse
+        self.dists = []
         self.color = color
 
     def __str__(self):
@@ -35,6 +37,10 @@ class Cluster:
     # Add point to the cluster
     def addPoint(self, newPoint):
         self.points = self.points + [newPoint]
+
+    # Add distance 
+    def addDistance(self, distance):
+        self.dists = self.dists + [distance]
 
     # Change the centroid of the cluster
     def changeCentroid(self, newPoint):
@@ -73,7 +79,7 @@ def calculateEuclideanDistance(dataPoint, centroid):
 
 # Compares EuclideanDistances and returns the position of the chosen cluster
 def compareEuclideanDistance(distances):
-    position = 0
+    #position = 0
     for i in range(len(distances)):
         if distances[i] == min(distances):
             return i
@@ -98,53 +104,77 @@ def main():
 
     # IMPLEMENTATION---------------------------------------------------------------------------------------------------------------------
     # K-Means Clustering Algorithm
+    
     # Initialize K
-    K = 3
+    SSEvals = []
+    klist =[]
 
-    # clusters = List of Cluster objects
-    clusters = []
-    colors = ["black", "red", "pink"]
+    for m in range(1,6):
+        K=m
 
-    # Select random centroids and create a list of K clusters
-    randomPoints = selectRandomPoints(3, DataSet)
+        # clusters = List of Cluster objects
+        clusters = []
+        colors = ["black", "red", "pink", "yellow", "blue"]
 
-    # Creating and initializing the clusters using random centroids
-    for i in range(K):
-        clusterInstance = Cluster(centroid=randomPoints[i], color=colors[i])
-        clusters.append(clusterInstance)
+        # Select random centroids and create a list of K clusters
+        randomPoints = selectRandomPoints(K, DataSet)
 
-    # Iterate throught the dataset
-    for point in DataSet:
-        ######################################
-        # point is the currently selected Point
+        # Creating and initializing the clusters using random centroids
+        for i in range(K):
+            clusterInstance = Cluster(centroid=randomPoints[i], color=colors[i])
+            clusters.append(clusterInstance)
 
-        # EuclideanDistances = list of Eculidean Distances calculated bw the point and different centroids
-        EuclideanDistances = []
-        # Calculate Euclidean distances of point and each of the cluster centroids
-        # and store it in an array with the same positions as that of the clusters
-        for cluster in clusters:
+
+        # Iterate throught the dataset
+        for point in DataSet:
             ######################################
-            ed = calculateEuclideanDistance(point, cluster.centroid)
-            EuclideanDistances.append(ed)
-            ######################################
+            # point is the currently selected Point
 
-        # Compare the Euclidean Distances and choose the shortest cluster
-        clusterPosition = compareEuclideanDistance(EuclideanDistances)
+            # EuclideanDistances = list of Eculidean Distances calculated bw the point and different centroids
+            EuclideanDistances = []
+            # Calculate Euclidean distances of point and each of the cluster centroids
+            # and store it in an array with the same positions as that of the clusters
+            for cluster in clusters:
+                ######################################
+                ed = calculateEuclideanDistance(point, cluster.centroid)
+                EuclideanDistances.append(ed)
+                ######################################
 
-        # Add point to the cluster with the shortest Euclidean Distance from point
-        clusters[clusterPosition].addPoint(point)
-        print(
-            f"Appended Cluster {clusterPosition} with point {point}. Length = {len(clusters[clusterPosition].points)}. Current centroid = ({clusters[clusterPosition].centroid.x}, {clusters[clusterPosition].centroid.y})"
-        )
+            # Compare the Euclidean Distances and choose the shortest cluster
+            clusterPosition = compareEuclideanDistance(EuclideanDistances)
 
-        # Update the centroid of the appended cluster
-        clusters[clusterPosition].changeCentroid(point)
-        print(
-            f"Updated centroid = ({clusters[clusterPosition].centroid.x}, {clusters[clusterPosition].centroid.y})"
-        )
-        ######################################
+            # Add point to the cluster with the shortest Euclidean Distance from point
+            clusters[clusterPosition].addPoint(point)
+            print(
+                f"Appended Cluster {clusterPosition} with point {point}. Length = {len(clusters[clusterPosition].points)}. Current centroid = ({clusters[clusterPosition].centroid.x}, {clusters[clusterPosition].centroid.y})"
+            )
+
+            # Update the centroid of the appended cluster
+            clusters[clusterPosition].changeCentroid(point)
+            print(
+                f"Updated centroid = ({clusters[clusterPosition].centroid.x}, {clusters[clusterPosition].centroid.y})"
+            )
+            ######################################`
+        #All points created and assigned
+        #Calculating SSEs for all clusters
+    
+    temp2 = 0
+    i=0
+    for cluster in clusters:
+        for j in range(len(cluster.points)):
+            temp = calculateEuclideanDistance(cluster.points[j], cluster.centroid)
+            temp = math.pow(temp, 2)
+            cluster.sse = cluster.sse + temp
+        temp2 = temp2 + cluster.sse
+        SSEvals.append(temp2)
+        klist.append(i+1)
+        print(f"SSE{i}={SSEvals[i]}")
+        i=i+1
+    
+    plt.plot(klist, SSEvals)
+    plt.show()
     # ---------------------------------------------------------------------------------------------------------------------------------
-
+"""
     # PLOTTING CLUSTERS----------------------------------------------------------------------------------------------------------------
     # Printing the clusters
     print("DatSet:")
@@ -166,6 +196,12 @@ def main():
     plt.show()
     plt.close()
     # ----------------------------------------------------------------------------------------------------------------------------------
-
-# Calling main
+"""
+#Calling main
 main()
+
+#---------------------------------------------------------------------------------------------------------------------------------
+
+
+
+#---------------------------------------------------------------------------------------------------------------------------------
