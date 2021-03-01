@@ -11,9 +11,10 @@ from matplotlib import style
 # CLASSES---------------------------------------------------------------------------------------------------------------
 # Point Class
 class Point:
-    def __init__(self, x = 0, y = 0):
+    def __init__(self, x = 0, y = 0, color = 'hotpink'):
         self.x = int(x)
         self.y = int(y)
+        self.color = color
 
     def __str__(self):
         return f"({self.x}, {self.y})"
@@ -49,8 +50,13 @@ class Cluster:
 
     # Plot the cluster using Pyplot
     def plotCluster(self):
+        x_list = []
+        y_list = []        
         for i in range(len(self.points)):
-            plt.scatter(self.points[i].x, self.points[i].y, color = self.color)
+            x_list.append(self.points[i].x)
+            y_list.append(self.points[i].y)
+        
+        plt.scatter(x_list, y_list, color = self.color)
     
     # To plot the centroid of the cluster using Pyplot
     def plotCentroid(self):
@@ -70,11 +76,11 @@ def selectRandomPoints(K, dataSet):
 
 # Calculating Euclidean Distance
 def calculateEuclideanDistance(dataPoint, centroid):
-    sum = math.sqrt(
+    distance = math.sqrt(
         math.pow((dataPoint.x - centroid.x), 2)
         + math.pow((dataPoint.y - centroid.y), 2)
     )
-    return sum
+    return distance
 
 
 # Compares EuclideanDistances and returns the position of the chosen cluster
@@ -84,25 +90,20 @@ def compareEuclideanDistance(distances):
         if distances[i] == min(distances):
             return i
 
-# Plotting clusters
-def Plot_clusters(clusterSet, DataSet):
+# Test function to print and check different values
+def dryTest(clusterSet, DataSet):
 
-
-    # Printing the clusters
+    # Printing the dataset
     print("DataSet:")
     for point in DataSet:
         print(point)
 
-    for cluster in clusterSet:
-        print("Cluster------")
-        print(cluster)
-
     # Displaying the clusters
     for cluster in clusterSet:
+        print("Cluster------")
         print(f"Centroid = ({cluster.centroid.x}, {cluster.centroid.y})")
-        # cluster.plotCentroid()
-        cluster.plotCluster()
-
+        print(cluster)
+        
 # ------------------------------------------------------------------------------------------------------------------------------------
 
 def main():
@@ -114,16 +115,16 @@ def main():
     plt.scatter(x, y, color = 'hotpink')
     plt.show()
 
-    # Adding data to a list of Points
-    DataSet = []
+    # Adding data to a tuple of Points
+    DataList = []
     for i in range(len(x)):
-        DataSet.append(Point(x[i], y[i]))
+        DataList.append(Point(x[i], y[i]))
 
-    for point in DataSet:
+    DataTuple = tuple(DataList)
+
+    print("DataTuple:")
+    for point in DataTuple:
         print(point) 
-
-    #     plt.scatter(DataSet[i].x, DataSet[i].y, color = 'hotpink')
-    # plt.show()
     # ------------------------------------------------------------------------------------------------------------------------------------
 
     # IMPLEMENTATION---------------------------------------------------------------------------------------------------------------------
@@ -134,7 +135,8 @@ def main():
     K_list =[]
     idealKClusters = [] # Clusters of the ideal K
 
-    for m in range(1,11):
+    # Loop from 1 to 10, for each value of K
+    for m in range(1,4):
         K = m
 
         # clusters = List of Cluster objects
@@ -142,23 +144,18 @@ def main():
         colors = ["black", "red", "pink", "yellow", "blue", "magenta", "orange", "brown", "green", "purple"]
 
         # Select random centroids and create a list of K clusters
-        randomPoints = selectRandomPoints(K, DataSet)
+        randomPoints = selectRandomPoints(K, DataTuple)
         for point in randomPoints:
+            print("RandomPoints")
             print(point)
-        
-        #print(f"Appointed centroid: {randomPoints}")
 
         # Creating and initializing the clusters using random centroids
         for i in range(K):
             clusterInstance = Cluster(centroid=randomPoints[i], color=colors[i])
             clusters.append(clusterInstance)
-        
-        # for cluster in clusters:
-        #     print(f"HEREEEEEEEEEEEEEE({cluster.centroid.x}, {cluster.centroid.y})")
-
 
         # Iterate throught the dataset
-        for point in DataSet:
+        for point in DataTuple:
             ######################################
             # point is the currently selected Point
 
@@ -177,15 +174,10 @@ def main():
 
             # Add point to the cluster with the shortest Euclidean Distance from point
             clusters[clusterPosition].addPoint(point)
-            # print(
-            #     f"Appended Cluster {clusterPosition} with point {point}. Length = {len(clusters[clusterPosition].points)}. Current centroid = ({clusters[clusterPosition].centroid.x}, {clusters[clusterPosition].centroid.y})"
-            # )
 
             # Update the centroid of the appended cluster
             clusters[clusterPosition].changeCentroid(point)
-            # print(
-            #     f"Updated centroid = ({clusters[clusterPosition].centroid.x}, {clusters[clusterPosition].centroid.y})"
-            # )
+
             ######################################`
         idealKClusters.append(clusters)
         #All points created and assigned
@@ -201,12 +193,10 @@ def main():
         temp2 = temp2 + cluster.sse
         sumSqDistList.append(temp2)
         K_list.append(i+1)
-        # print(f"SSE{i}={sumSqDistList[i]}")
-        # print(f"Klist{i}={K_list[i]}")
         i = i + 1
 
     # Elbow Method
-    # l1 and l2 are the start and end points of the line
+    # l1 and l2 are the start and end points of the line joining the first and the last pints of the SSE scores
     l1 = np.array([K_list[0],sumSqDistList[0]])
     l2= np.array([K_list[len(K_list)-1],sumSqDistList[len(sumSqDistList)-1]])
     # Plot (k, sse) and find the ED for each point from the line.
@@ -221,18 +211,23 @@ def main():
         if (d > max):
             max = d
             idealK = K_list[z]
+    
+    print("DataTuple:")
+    for point in DataTuple:
+        print(point) 
 
     print(f"IDEAL K: {idealK}")
 
+    
+
     # Plot the clusters for the ideal K
-    # plt.plot(klist, SSEvals)
     for cluster in idealKClusters[idealK]:
-        print(cluster)
-    # plt.show()
-    # plt.close()
+        cluster.plotCluster()
+
+    plt.show()
     # ---------------------------------------------------------------------------------------------------------------------------------
 
-#Calling main
+# Calling main
 main()
 
 #---------------------------------------------------------------------------------------------------------------------------------
