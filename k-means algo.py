@@ -11,9 +11,9 @@ from matplotlib import style
 # CLASSES---------------------------------------------------------------------------------------------------------------
 # Point Class
 class Point:
-    def __init__(self, x=0, y=0):
-        self.x = x
-        self.y = y
+    def __init__(self, x = 0, y = 0):
+        self.x = int(x)
+        self.y = int(y)
 
     def __str__(self):
         return f"({self.x}, {self.y})"
@@ -21,7 +21,7 @@ class Point:
 
 # Cluster Class
 class Cluster:
-    def __init__(self, centroid=Point(0, 0), sse =0, color="white"):
+    def __init__(self, centroid = Point(0, 0), sse = 0, color = "white"):
         self.centroid = centroid
         self.points = []
         self.sse = sse
@@ -85,7 +85,7 @@ def compareEuclideanDistance(distances):
             return i
 
 # Plotting clusters
-def Plot_clusters(C,DataSet):
+def Plot_clusters(clusterSet, DataSet):
 
 
     # Printing the clusters
@@ -93,14 +93,14 @@ def Plot_clusters(C,DataSet):
     for point in DataSet:
         print(point)
 
-    for cluster in C:
+    for cluster in clusterSet:
         print("Cluster------")
         print(cluster)
 
     # Displaying the clusters
-    for cluster in C:
+    for cluster in clusterSet:
         print(f"Centroid = ({cluster.centroid.x}, {cluster.centroid.y})")
-        cluster.plotCentroid()
+        # cluster.plotCentroid()
         cluster.plotCluster()
 
 # ------------------------------------------------------------------------------------------------------------------------------------
@@ -111,6 +111,8 @@ def main():
     x, y = np.loadtxt("testcase.csv", unpack=True, delimiter=",")
     print(x)
     print(y)
+    plt.scatter(x, y, color = 'hotpink')
+    plt.show()
 
     # Adding data to a list of Points
     DataSet = []
@@ -128,11 +130,12 @@ def main():
     # K-Means Clustering Algorithm
     
     # Initialize K
-    SSEvals = []
-    klist =[]
+    sumSqDistList = [] # List of SSEs
+    K_list =[]
+    idealKClusters = [] # Clusters of the ideal K
 
     for m in range(1,11):
-        K=m
+        K = m
 
         # clusters = List of Cluster objects
         clusters = []
@@ -140,6 +143,8 @@ def main():
 
         # Select random centroids and create a list of K clusters
         randomPoints = selectRandomPoints(K, DataSet)
+        for point in randomPoints:
+            print(point)
         
         #print(f"Appointed centroid: {randomPoints}")
 
@@ -148,8 +153,8 @@ def main():
             clusterInstance = Cluster(centroid=randomPoints[i], color=colors[i])
             clusters.append(clusterInstance)
         
-        for cluster in clusters:
-            print(f"HEREEEEEEEEEEEEEE({cluster.centroid.x}, {cluster.centroid.y})")
+        # for cluster in clusters:
+        #     print(f"HEREEEEEEEEEEEEEE({cluster.centroid.x}, {cluster.centroid.y})")
 
 
         # Iterate throught the dataset
@@ -172,37 +177,59 @@ def main():
 
             # Add point to the cluster with the shortest Euclidean Distance from point
             clusters[clusterPosition].addPoint(point)
-            print(
-                f"Appended Cluster {clusterPosition} with point {point}. Length = {len(clusters[clusterPosition].points)}. Current centroid = ({clusters[clusterPosition].centroid.x}, {clusters[clusterPosition].centroid.y})"
-            )
+            # print(
+            #     f"Appended Cluster {clusterPosition} with point {point}. Length = {len(clusters[clusterPosition].points)}. Current centroid = ({clusters[clusterPosition].centroid.x}, {clusters[clusterPosition].centroid.y})"
+            # )
 
             # Update the centroid of the appended cluster
             clusters[clusterPosition].changeCentroid(point)
-            print(
-                f"Updated centroid = ({clusters[clusterPosition].centroid.x}, {clusters[clusterPosition].centroid.y})"
-            )
+            # print(
+            #     f"Updated centroid = ({clusters[clusterPosition].centroid.x}, {clusters[clusterPosition].centroid.y})"
+            # )
             ######################################`
+        idealKClusters.append(clusters)
         #All points created and assigned
-        #Calculating SSEs for all clusters
-    
+        
+    #Calculating SSEs for all clusters
     temp2 = 0
-    i=0
+    i = 0
     for cluster in clusters:
-        for j in range(len(cluster.points)):
-            temp = calculateEuclideanDistance(cluster.points[j], cluster.centroid)
+        for point in cluster.points:
+            temp = calculateEuclideanDistance(point, cluster.centroid)
             temp = math.pow(temp, 2)
             cluster.sse = temp
         temp2 = temp2 + cluster.sse
-        SSEvals.append(temp2)
-        klist.append(i+1)
-        print(f"SSE{i}={SSEvals[i]}")
-        print(f"Klist{i}={klist[i]}")
-        i=i+1
+        sumSqDistList.append(temp2)
+        K_list.append(i+1)
+        # print(f"SSE{i}={sumSqDistList[i]}")
+        # print(f"Klist{i}={K_list[i]}")
+        i = i + 1
 
-    Plot_clusters(clusters, DataSet)
+    # Elbow Method
+    # l1 and l2 are the start and end points of the line
+    l1 = np.array([K_list[0],sumSqDistList[0]])
+    l2= np.array([K_list[len(K_list)-1],sumSqDistList[len(sumSqDistList)-1]])
+    # Plot (k, sse) and find the ED for each point from the line.
+    max = 0
+    idealK = 1
+    for z in range(K):
+        # Convert each point to numpy arrays
+        p3 = np.array([K_list[z],sumSqDistList[z]])
+        # Distance between line and point
+        d = abs(np.cross(l2-l1,p3-l1)/np.linalg.norm(l2-l1))
+        # k with the maximum ED is the ideal K
+        if (d > max):
+            max = d
+            idealK = K_list[z]
 
-    plt.plot(klist, SSEvals)
-    plt.show()
+    print(f"IDEAL K: {idealK}")
+
+    # Plot the clusters for the ideal K
+    # plt.plot(klist, SSEvals)
+    for cluster in idealKClusters[idealK]:
+        print(cluster)
+    # plt.show()
+    # plt.close()
     # ---------------------------------------------------------------------------------------------------------------------------------
 
 #Calling main
