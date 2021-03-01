@@ -84,6 +84,24 @@ def compareEuclideanDistance(distances):
         if distances[i] == min(distances):
             return i
 
+# Plotting clusters
+def Plot_clusters(C,DataSet):
+
+
+    # Printing the clusters
+    print("DataSet:")
+    for point in DataSet:
+        print(point)
+
+    for cluster in C:
+        print("Cluster------")
+        print(cluster)
+
+    # Displaying the clusters
+    for cluster in C:
+        print(f"Centroid = ({cluster.centroid.x}, {cluster.centroid.y})")
+        cluster.plotCentroid()
+        cluster.plotCluster()
 
 # ------------------------------------------------------------------------------------------------------------------------------------
 
@@ -180,31 +198,13 @@ def main():
         print(f"SSE{i}={SSEvals[i]}")
         print(f"Klist{i}={klist[i]}")
         i=i+1
-    
+
+    Plot_clusters(clusters, DataSet)
+
     plt.plot(klist, SSEvals)
     plt.show()
     # ---------------------------------------------------------------------------------------------------------------------------------
-"""
-    # PLOTTING CLUSTERS----------------------------------------------------------------------------------------------------------------
-    # Printing the clusters
-    print("DataSet:")
-    for point in DataSet:
-        print(point)
 
-    for cluster in clusters:
-        print("Cluster------")
-        print(cluster)
-
-    # Displaying the clusters
-    for cluster in clusters:
-        print(f"Centroid = ({cluster.centroid.x}, {cluster.centroid.y})")
-        cluster.plotCentroid()
-        cluster.plotCluster()
-
-    plt.show()
-    plt.close()
-    # ----------------------------------------------------------------------------------------------------------------------------------
-"""
 #Calling main
 main()
 
