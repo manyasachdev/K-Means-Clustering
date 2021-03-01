@@ -84,7 +84,24 @@ def compareEuclideanDistance(distances):
         if distances[i] == min(distances):
             return i
 
+# PLOTTING CLUSTERS------------
+def Plot_clusters(clusters,DataSet):
 
+
+    # Printing the clusters
+    print("DataSet:")
+    for point in DataSet:
+        print(point)
+
+    for cluster in clusters:
+        print("Cluster------")
+        print(cluster)
+
+    # Displaying the clusters
+    for cluster in clusters:
+        print(f"Centroid = ({cluster.centroid.x}, {cluster.centroid.y})")
+        cluster.plotCentroid()
+        cluster.plotCluster()
 # ------------------------------------------------------------------------------------------------------------------------------------
 
 def main():
@@ -114,14 +131,21 @@ def main():
 
         # clusters = List of Cluster objects
         clusters = []
-        colors = ["black", "red", "pink", "yellow", "blue"]
+        colors = []
+        # To choose random color
+        for i in range(K):
+            r = random.random()
+            g = random.random()
+            b = random.random()
+            col = (r, g, b)
+            colors.append(col)
 
         # Select random centroids and create a list of K clusters
         randomPoints = selectRandomPoints(K, DataSet)
 
         # Creating and initializing the clusters using random centroids
         for i in range(K):
-            clusterInstance = Cluster(centroid=randomPoints[i], color=colors[i])
+            clusterInstance = Cluster(centroid=randomPoints[i], color = colors[i])
             clusters.append(clusterInstance)
 
 
@@ -174,29 +198,12 @@ def main():
     plt.plot(klist, SSEvals)
     plt.show()
     # ---------------------------------------------------------------------------------------------------------------------------------
-"""
-    # PLOTTING CLUSTERS----------------------------------------------------------------------------------------------------------------
-    # Printing the clusters
-    print("DatSet:")
-    for point in DataSet:
-        print(point)
-
-    for cluster in clusters:
-        print("Cluster------")
-        print(cluster)
-
-    # Displaying the clusters
-    for cluster in clusters:
-        print(f"Centroid = ({cluster.centroid.x}, {cluster.centroid.y})")
-        cluster.plotCentroid()
-        cluster.plotCluster()
-
-
+    Plot_clusters(clusters,DataSet)
 
     plt.show()
     plt.close()
-    # ----------------------------------------------------------------------------------------------------------------------------------
-"""
+
+
 #Calling main
 main()
 
