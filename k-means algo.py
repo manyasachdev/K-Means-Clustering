@@ -5,6 +5,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import style
 
+#CLASSES----------------------------------------------------------------------------------------------------------------
 #Point Class
 class Point:
     def __init__(self, x=0, y=0):
@@ -38,15 +39,15 @@ class Cluster:
     def plotCluster(self):
         for i in range(len(self.points)):
             plt.scatter(self.points[i].x, self.points[i].y, color = self.color)
+#---------------------------------------------------------------------------------------------------------------------------------
 
-
+#UTILITY FUNCTIONS----------------------------------------------------------------------------------------------------------------
 #Selects and returns random k points in a list from a given dataset
 def selectRandomPoints(K, dataSet):
     randomPoints = []
     for i in range(K):
         randomPoints.append(random.choice(dataSet))
     return randomPoints
-
 
 #Calculating Euclidean Distance
 def calculateEuclideanDistance(dataPoint, centroid):
@@ -59,8 +60,9 @@ def compareEuclideanDistance(distances):
     for i in range(len(distances)):
         if distances[i] == min(distances):
             return i
+#------------------------------------------------------------------------------------------------------------------------------------
 
-
+#DEALING WITH DATASET----------------------------------------------------------------------------------------------------------------
 #Parsing the CSV file using Numpy
 x,y = np.loadtxt('testcase.csv', unpack=True, delimiter=',')
 
@@ -70,18 +72,19 @@ for i in range(10):
     DataSet.append(Point(x[i], y[i]))
 #     plt.scatter(DataSet[i].x, DataSet[i].y, color = 'hotpink')
 # plt.show()
+#------------------------------------------------------------------------------------------------------------------------------------
 
+#IMPLEMENTATION----------------------------------------------------------------------------------------------------------------------
 #K-Means Clustering Algorithm
-
 #Initialize K
-K = 2
+K = 3
 
 # cluster = List of Cluster objects
 clusters = []
-colors = ['black', 'red']
+colors = ['black', 'red', 'pink']
 
 #Select random centroids and create a list of K clusters
-randomPoints = selectRandomPoints(2, DataSet)
+randomPoints = selectRandomPoints(3, DataSet)
 for i in range(K):
     clusterInstance = Cluster(centroid = randomPoints[i], color = colors[i])
     clusters.append(clusterInstance)
@@ -111,15 +114,16 @@ for i in range(len(DataSet)):
     # Update the centroid of the appended cluster
     clusters[clusterPosition].changeCentroid(p)
     print(f'Updated centroid = ({clusters[clusterPosition].centroid.x}, {clusters[clusterPosition].centroid.y})')
+#---------------------------------------------------------------------------------------------------------------------------------
 
-#     ######################################
-
+#PLOTTING CLUSTERS----------------------------------------------------------------------------------------------------------------
 for point in DataSet:
     print(point)
 
-# Priting and displaying the clusters
+# Printing and displaying the clusters
 for cluster in clusters:
     for point in cluster.points:
         plt.scatter(point.x, point.y, color = cluster.color)
 
 plt.show()
+#----------------------------------------------------------------------------------------------------------------------------------
