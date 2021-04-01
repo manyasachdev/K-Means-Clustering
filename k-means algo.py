@@ -45,8 +45,11 @@ class Cluster:
 
     # Change the centroid of the cluster
     def changeCentroid(self, newPoint):
+        print('Centroid Changed')
         self.centroid.x = (newPoint.x + self.centroid.x) / 2
+        print(self.centroid.x)
         self.centroid.y = (newPoint.y + self.centroid.y) / 2
+        print(self.centroid.y)
 
     # Plot the cluster using Pyplot
     def plotCluster(self):
@@ -67,8 +70,11 @@ class Cluster:
 
 # UTILITY FUNCTIONS---------------------------------------------------------------------------------------------------------------
 # Selects and returns random K points in a list from a given dataset
-def selectRandomPoints(K, dataSet):
+def selectRandomPoints(K, dataSetX, dataSetY):
     randomPoints = []
+    dataSet = []
+    for (x,y) in zip(dataSetX, dataSetY):
+        dataSet.append(Point(x,y)) 
     for i in range(K):
         randomPoints.append(random.choice(dataSet))
     return randomPoints
@@ -109,22 +115,24 @@ def dryTest(clusterSet, DataSet):
 def main():
     # DEALING WITH DATASET----------------------------------------------------------------------------------------------------------------
     # Parsing the CSV file using Numpy
-    x, y = np.loadtxt("testcase.csv", unpack=True, delimiter=",")
+    x, y = np.loadtxt("sampledata.csv", unpack=True, delimiter=",")
     print(x)
     print(y)
     plt.scatter(x, y, color = 'hotpink')
     plt.show()
 
     # Adding data to a tuple of Points
-    DataList = []
+    DataListX = []
+    DataListY = []
     for i in range(len(x)):
-        DataList.append(Point(x[i], y[i]))
+        DataListX.append(x[i])
+        DataListY.append(y[i])
 
-    DataTuple = tuple(DataList)
+    # DataTuple = tuple(DataList)
 
     print("DataTuple:")
-    for point in DataTuple:
-        print(point) 
+    for (x,y) in zip(DataListX,DataListY):
+        print(f'({x}, {y})') 
     # ------------------------------------------------------------------------------------------------------------------------------------
 
     # IMPLEMENTATION---------------------------------------------------------------------------------------------------------------------
@@ -144,7 +152,7 @@ def main():
         colors = ["black", "red", "pink", "yellow", "blue", "magenta", "orange", "brown", "green", "purple"]
 
         # Select random centroids and create a list of K clusters
-        randomPoints = selectRandomPoints(K, DataTuple)
+        randomPoints = selectRandomPoints(K, dataSetX = DataListX, dataSetY = DataListY)
         for point in randomPoints:
             print("RandomPoints")
             print(point)
@@ -155,7 +163,8 @@ def main():
             clusters.append(clusterInstance)
 
         # Iterate throught the dataset
-        for point in DataTuple:
+        for (x,y) in zip(DataListX,DataListY):
+            point = Point(x,y) 
             ######################################
             # point is the currently selected Point
 
@@ -212,11 +221,11 @@ def main():
             max = d
             idealK = K_list[z]
     
-    print("DataTuple:")
-    for point in DataTuple:
-        print(point) 
+    print("DataList:")
+    for (x,y) in zip(DataListX, DataListY):
+        print(f'({x}, {y})') 
 
-    print(f"IDEAL K: {idealK}")
+    print(f"IDEAL K: {idealK+1}")
 
     
 
